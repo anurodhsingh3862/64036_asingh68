@@ -1,0 +1,68 @@
+---
+title: "BA-ASSIGNMENT-01"
+author: "ANURODH-SINGH"
+date: "2023-10-03"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = FALSE, results='hide'}
+#Insertion/Addition of Package
+options(repos = "https://cran.r-project.org/")
+install.packages("ISLR")
+library(ISLR)
+```
+
+
+```{r}
+#Carseats is already an installed dataset in R library so seeing first of all what is Carseats data
+print(Carseats)
+```
+
+```{r}
+#Summary of dataset
+summary(Carseats)
+#Observations of dataset
+nrow(Carseats)
+```
+
+```{r}
+# maximum value of the advertising attribute
+max(Carseats$Advertising)
+```
+
+```{r}
+#Calculation of IQR
+IQR(Carseats$Price)
+```
+
+```{r}
+#Creation of Scatter Plot
+x=Carseats$Sales
+y=Carseats$Price
+plot(x,y,main="Scatter Plot of Sales VS Price",xlab="sales",ylab="Price",col="red")
+
+```
+
+
+```{r}
+#Co-Relation
+cor(Carseats$Sales,Carseats$Price)
+
+#The corelation gives the negative value so we can say that both Sales and Price trend to move in the opposite direction.
+```
+
+
+##The assignment is based on the creation and finding of the different analysis on the "Carseats" dataset.
+#In this assignment we have uploaded the library called "ISLR".
+#Next we have chosen the dataset called "Carseats".
+#we have found out the summary for the dataset which is used to get the details.
+# we have to find the maximum value using MAX .
+#We found the Inter Quartile Range using IQR.
+#Lastly,We have created a Scatterplot for Price VS Sales
