@@ -1,0 +1,332 @@
+---
+title: "ONLINE_RETAIL_ASSIGNMENT_BUSINESS_ANALYTICS"
+author: "Anurodh Singh"
+date: "2023-09-25"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r setup, include=TRUE,  results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+******
+#SUMMARY
+With the help of packages "dplyr" and "ggplot2:-
+1. constructed a  code to load a CSV file and calculate the number of transactions by country, showing both the total number and percentage of transactions. It filters for countries with transactions exceeding 1% of the total.
+
+2.Now created a new variable, 'TransactionValue,' by multiplying 'Quantity' and 'UnitPrice,' adding it to the dataframe.
+
+3. Using 'TransactionValue,' now calculated the total transaction values by country, displaying countries with total transactions exceeding £130,000.
+
+4. Hereafter converted 'InvoiceDate' into a 'POSIXlt' object, separated date, day of the week, hour, and month components, and answered several questions related to them, including percentages of transactions by days of the week and months, and the date with the highest transactions from Australia.
+
+5.Then plotted a histogram of transaction values from Germany using the 'hist()' function.
+
+6.Now created a code that identifies the customer with the highest number of transactions and the most valuable customer in terms of the total sum of transactions whic is the customer with customer ID= "17841".
+
+7.Now calculated the percentage of missing values for each variable in the dataset using the 'colMeans()' function.
+
+8.Here constructed a code that determines the number of transactions with missing 'CustomerID' records by countries.
+
+9.Now calculated the average number of days between consecutive shopping sessions for customers using 'CustomerID' and 'New_Invoice_Date.'
+
+10.The code written now calculates the return rate for French customers, defined as the ratio of canceled transactions to the total number of transactions, considering 'Quantity' with a negative value.The return rate for french customers is = 1.741264.
+
+Q11.Here found out the product that has generated the highest revenue for the retailer based on the total sum of 'TransactionValue.' which is= "DOTCOM POSTAGE".
+
+12. Finally with the code here calculated the number of unique customers in the dataset using 'unique()' and 'length()' functions. and the result comes out to be= "4373"
+
+******
+******
+#PROBLEM STATEMENT AND CODE:-
+
+Q1.Show the breakdown of the number of transactions by countries i.e., how many transactions are in the dataset for each country (consider all records including cancelled transactions). Show this in total number and also in percentage. Show only countries accounting for more than 1% of the total transactions.
+```{r}
+#install.packages("dplyr")
+#install.packages("ggplot2")
+library(dplyr)
+library(ggplot2)
+
+```
+
+```{r}
+# Loading the CSV file into a data frame
+xyz <- read.csv("C:/Users/ASUS/Desktop/Online_Retail.csv")
+#Q1. Specifying the name of the column I want to count entries in
+column_name <- "InvoiceNo"
+
+# Counting the total number of entries in the specified column
+num_entries <- length(xyz$InvoiceNo)
+num_entries
+
+
+#defining a variable transactions_by_country to display country's
+transactions_by_country <- table(xyz$Country)
+transactions_by_country
+
+#calculating one percent of total transactions
+one_percent <- (0.01*num_entries)
+one_percent
+```
+
+
+#counting countries with transactions more than one percentage of total transactions
+```{r}
+more_than_one <- transactions_by_country >= one_percent
+more_than_one
+ 
+refined_data_frame <- transactions_by_country[more_than_one]
+refined_data_frame
+
+```
+
+#calculating percentage for countries with more than one percent of total countries
+```{r}
+percent_country_transactions <- refined_data_frame/num_entries*100
+percent_country_transactions
+```
+
+Q2.Create a new variable ‘TransactionValue’ that is the product of the exising ‘Quantity’ and
+‘UnitPrice’ variables. Add this variable to the dataframe.
+```{r}
+TransactionValue <- (xyz$Quantity*xyz$UnitPrice)
+B <- data.frame(xyz,TransactionValue)
+
+```
+
+
+
+Q3.Using the newly created variable, TransactionValue, show the breakdown of transaction values by countries i.e. how much money in total has been spent each country. Show this in total sum of transaction values. Show only countries with total transaction exceeding 130,000 British Pound
+```{r}
+Countrywise_total_transactions <- B %>% 
+  group_by(Country) %>% 
+  summarize(Countrywise_total_transactions = sum(TransactionValue))
+
+Countrywise_total_transactions
+
+
+```
+Q4.In this question,
+we are dealing with the InvoiceDate variable. The variable is read as a categorical when you read
+data from the file. Now we need to explicitly instruct R to interpret this as a Date variable.
+"POSIXlt" and "POSIXct" are two powerful object classes in R to deal with date and time. Click here
+for more information. First let’s convert ‘InvoiceDate’ into a POSIXlt object:
+Temp=strptime(Online_Retail$InvoiceDate,format='%m/%d/%Y %H:%M',tz='GMT')
+Check the variable using, head(Temp). Now, let’s separate date, day of the week and hour
+components dataframe with names as New_Invoice_Date, Invoice_Day_Week and
+New_Invoice_Hour:
+Online_Retail$New_Invoice_Date <- as.Date(Temp)
+The Date objects have a lot of flexible functions. For example knowing two date values, the object
+allows you to know the difference between the two dates in terms of the number days. Try this:
+Online_Retail$New_Invoice_Date[20000]- Online_Retail$New_Invoice_Date[10]
+Also we can convert dates to days of the week. Let’s define a new variable for that
+Online_Retail$Invoice_Day_Week= weekdays(Online_Retail$New_Invoice_Date)
+For the Hour, let’s just take the hour (ignore the minute) and convert into a normal numerical
+value:
+Online_Retail$New_Invoice_Hour = as.numeric(format(Temp, "%H"))
+Finally, lets define the month as a separate numeric variable too:
+Online_Retail$New_Invoice_Month = as.numeric(format(Temp, "%m"))
+Now answer the flowing questions.
+a) Show the percentage of transactions (by numbers) by days of the week (extra 1% of total
+points)
+b) Show the percentage of transactions (by transaction volume) by days of the week (extra 1%
+of total points)
+c) Show the percentage of transactions (by transaction volume) by month of the year (extra 2%
+of total points)
+d) What was the date with the highest number of transactions from Australia? (extra 2% of total
+points)
+e) The company needs to shut down the website for two consecutive hours for maintenance.
+What would be the hour of the day to start this so that the distribution is at minimum for the
+customers? The responsible IT team is available from 7:00 to 20:00 every day. 
+
+```{r}
+#Firstly let's Convert 'InvoiceDate' to POSIXlt object
+Temp <- strptime(B$InvoiceDate, format='%m/%d/%Y %H:%M', tz='GMT')
+
+#Now Let's separate date, day of the week, hour, and month components
+B$New_Invoice_Date <- as.Date(Temp)
+B$Invoice_Day_Week <- weekdays(B$New_Invoice_Date)
+B$New_Invoice_Hour <- as.numeric(format(Temp, "%H"))
+B$New_Invoice_Month <- as.numeric(format(Temp, "%m"))
+
+# a) Show the percentage of transactions (by numbers) by days of the week
+day_of_week_counts <- table(B$Invoice_Day_Week)
+day_of_week_percent <- (day_of_week_counts / sum(day_of_week_counts)) * 100
+
+# b) Show the percentage of transactions (by transaction volume) by days of the week
+day_of_week_volume <- tapply(B$Quantity, B$Invoice_Day_Week, sum)
+day_of_week_volume_percent <- (day_of_week_volume / sum(day_of_week_volume)) * 100
+
+# c) Show the percentage of transactions (by transaction volume) by month of the year
+month_counts <- table(B$New_Invoice_Month)
+month_percent <- (month_counts / sum(month_counts)) * 100
+
+# d) Date with the highest number of transactions from Australia
+australia_dates <- B$New_Invoice_Date[B$Country == "Australia"]
+highest_transactions_date <- as.Date(names(sort(table(australia_dates), decreasing = TRUE)[1]))
+highest_transactions_date
+
+# e) Calculate the optimal hour to start maintenance with minimal impact on customers
+
+# Defining a function to calculate the distribution of transactions by hour
+calculate_distribution <- function(hour) {
+  # Filtering data for the specified hour
+  hour_data <- subset(B, New_Invoice_Hour == hour)
+  
+  # Calculating the number of transactions for that hour
+  transactions_count <- nrow(hour_data)
+  
+  return(transactions_count)
+}
+
+# starting Loop through the hours from 7 to 20 and find the optimal start time
+optimal_start_hour <- 7:20
+distribution <- sapply(optimal_start_hour, calculate_distribution)
+optimal_start_hour <- optimal_start_hour[which.min(distribution)]
+
+# Printing the results
+cat("a) Percentage of transactions (by numbers) by days of the week:\n")
+print(day_of_week_percent)
+
+cat("b) Percentage of transactions (by transaction volume) by days of the week:\n")
+print(day_of_week_volume_percent)
+
+cat("c) Percentage of transactions (by transaction volume) by month of the year:\n")
+print(month_percent)
+
+cat("d) Date with the highest number of transactions from Australia:\n")
+print(highest_transactions_date)
+
+cat("e) Optimal start hour for maintenance to minimize customer impact:\n")
+print(optimal_start_hour)
+
+
+```
+
+Q5.Plot the histogram of transaction values from Germany. Use the hist() function to plot. 
+```{r}
+transactions_of_germany <- B$TransactionValue[xyz$Country=="Germany"]
+hist(transactions_of_germany, 
+     main = "Histogram of transactions by Germany",
+     
+     xlab = "Transaction Values of Germany",
+     ylab = "Frequency")
+
+
+```
+Q6Which customer had the highest number of transactions? Which customer is most valuable (i.e.
+highest total sum of transactions)
+```{r}
+sst <- c("CustomerID")
+tbl_cst_id <- xyz[sst]
+MX <- names(sort(table(tbl_cst_id$CustomerID), decreasing = TRUE)[1])
+MX
+
+```
+
+  
+```{r}
+ctv <- B[, c("CustomerID", "TransactionValue")]
+Valuable_cust<- ctv %>%
+  group_by(CustomerID) %>%
+  summarize(TotalTransactionValue = sum(TransactionValue))
+Valuable_cust
+
+
+```
+Q7.Calculate the percentage of missing values for each variable in the dataset.
+Hint colMeans()
+```{r}
+#assuming B is the name of my dataframe
+#calculating the percentage of missing values for each variable
+mis_per <- colMeans(is.na(B))*100
+print("Percentage of missing values for each variable")
+print(mis_per)
+
+```
+Q8.What are the number of transactions with missing CustomerID records by countries?
+```{r}
+missing_ct <- B[is.na(B$CustomerID),]
+mis_ctcr <- table(missing_ct$Country)
+print(mis_ctcr)
+
+```
+
+
+Q9.On average, how often the costumers comeback to the website for their next shopping? (i.e. what is the average number of days between consecutive shopping) Hint: 1. A close
+approximation is also acceptable and you may find diff() function useful
+```{r}
+# Convert InvoiceDate to POSIXlt object for date calculations
+B$InvoiceDate <- as.POSIXlt(B$InvoiceDate, format="%m/%d/%Y %H:%M", tz="GMT")
+
+# Sort the dataframe by CustomerID and InvoiceDate
+sorted_data <- B[order(B$CustomerID,B$InvoiceDate),]
+
+# Calculate the time difference between consecutive transactions for each customer
+time_diff <- unlist(tapply(sorted_data$InvoiceDate, sorted_data$CustomerID, function(x) c(0, diff(x))))
+
+# Filter out 0 time differences (transactions on the same day)
+time_diff <- time_diff[time_diff != 0]
+
+# Calculate the average number of days between consecutive shopping sessions
+average_days_between_shopping <- mean(time_diff, na.rm = TRUE)
+
+
+# Print the result
+print(paste("Average number of days between consecutive shopping sessions:", round(average_days_between_shopping, 2)))
+
+```
+
+
+Q10.In the retail sector, it is very important to understand the return rate of the goods purchased by customers. In this example, we can define this quantity, simply, as the ratio of the number of transactions cancelled (regardless of the transaction value) over the total number of transactions.With this definition, what is the return rate for the French customers?
+Consider the cancelled transactions as those where the ‘Quantity’ variable has a negative value.
+```{r}
+# Filter the data to only include transactions from French customers
+french_customers <- B[B$Country == "France",]
+
+# Count the number of cancelled transactions
+cancelled_transactions <- french_customers[french_customers$Quantity < 0, ] %>%
+nrow()
+
+# Count the total number of transactions
+total_transactions <- french_customers %>% nrow()
+
+# Calculate the return rate
+return_rate <- (cancelled_transactions/total_transactions*100)
+
+# Print the result
+print(return_rate)
+
+```
+
+
+Q11.What is the product that has generated the highest revenue for the retailer? (i.e. item with the
+highest total sum of ‘TransactionValue’)
+```{r}
+
+# Calculating total transaction values for each product
+total_transaction_values <- tapply(B$TransactionValue, B$Description, sum)
+
+# Finding the product with the highest total sum of 'TransactionValue'
+highest_revenue_product <- names(total_transaction_values[total_transaction_values == max(total_transaction_values)])
+
+# Printing the result
+print(paste("Product with the highest revenue:", highest_revenue_product))
+```
+
+
+Q12.How many unique customers are represented in the dataset? You can use unique() and length()functions
+```{r}
+# Getting unique CustomerIDs
+unique_customers <- unique(B$CustomerID)
+
+# Calculating the number of unique customers
+number_of_unique_customers <- length(unique_customers)
+
+# Printing the result
+print(paste("Number of unique customers:", number_of_unique_customers))
+```
+
+
