@@ -1,0 +1,204 @@
+---
+title: "REGRESSION-ASSIGNMENT-BA-03"
+author: "ANURODH-SINGH"
+date: "2023-11-03"
+output:
+  pdf_document: default
+  html_document: default
+---
+#Summary
+
+
+•	A strong correlation between the variables "x" and "y" indicates a linear relationship using the equation Y=X*4+3.45, providing the potential for precise predictions and valuable insights, particularly in domains such as finance and economics.
+
+•	An R² value of 0.6517 obtained using using the 'corr' function suggests that the model explains approximately 65.17% of the variation in "Y," indicating a moderately accurate fit for the analysis of the dataset.
+
+•	Now using the 'mtcars' dataset as reference Chris's model(model2), which examines the relationship between horsepower and miles per gallon (mpg), outperforms James's model, which relates horsepower to vehicle weight(model1), Chris's model boasts a higher R-squared value (60.24% versus 43.39%), along with a significant F-statistic and p-value, offering valuable insights into the dynamics of fuel efficiency and horsepower.
+
+•	Using this model the estimated Horse Power of a car with 4 cylinders and mpg of 22 is 88.93618 horsepower.
+
+•	All predictors are statistically significant, as their p-values are less than 0.05. This underscores the importance of these factors in fostering a nuanced understanding of property valuation.
+
+•	Through ANOVA analysis, it becomes evident that crime holds a dominant position, exhibiting the highest F-value. This insight guides resource allocation for precise analyses across various fields.
+
+•	Notably, the proximity of properties to rivers emerges as the least significant variable, underscoring the disparities in variable importance. This finding paves the way for a more focused analysis and strategic decision-making.
+
+•	We now used BostonHousing dataset. The dataset is in ‘mlbench’ package,so we first installed the package, called the library and the loaded the dataset.
+
+•	A thorough understanding of these significant variables empowers stakeholders, enabling informed decision-making and strategic investments in the constantly evolving real estate landscape.
+
+
+******
+
+```{r setup, include=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+#Q1. #Run the following code in R-studio to create two variables X and Y.
+set.seed(2017)
+X=runif(100)*10
+Y=X*4+3.45
+Y=rnorm(100)*0.29*Y+Y
+```
+```{r}
+#Q1.a. Plot Y against X. Include a screenshot of the plot in your submission. Using the File menu youcan save the graph as a picture on your computer. Based on the plot do you think we can fit a linear model to explain Y based on X? (8% of total points)
+plot(Y~X)
+abline(lm(Y~X), col = "red")
+```
+We can see there exists correlation between the variables "x" and "y" from the plot.A best fit line can also be seen hence linear model would be a good fit.
+
+
+```{r}
+#Q1.b.Construct a simple linear model of Y based on X.
+model <- lm(Y~X)
+
+#Writing the equation that explains Y based on X
+cat("Y= 3.6108X + 4.4655")
+
+#.What is the accuracy of this model?
+summary(model)
+
+```
+```{r}
+# Regression visualization
+plot(X, Y, xlab = "X axis", 
+     ylab = "Y axis",
+     main = "Regression Visualization")
+abline(4.4655, 3.6108, col = "red")
+```
+
+The accuracy of this model is represented by the (R²) value, which is 0.6517 that is 65.17% variability with the dependent variable "Y". In this case, the model explains approximately 65.17% of the variance, suggesting a moderately accurate fit to the data.
+The F-statistic is 183.4, with a very low p-value (< 2.2e-16).
+If the p-value remains less than 0.05, it indicates that the independent variables chosen are very prominent and strongly establish the significant relationship with the dependent variable. The F-statistic tests the overall significance of the model. In this case, the model is highly significant, indicating that at least one of the predictors in the model is associated with the response variable.
+
+Q1.c.How the Coefficient of Determination, 'R²'of the model above is related to the correlation coefficient of X and Y?
+```{r}
+cor(X,Y)^2
+```
+
+Ans.The (R²) value of 0.6517 indicates that approximately 65.17% of the variability in the dependent variable "Y" is explained by the independent variable "X." R² measures how much of the variance in the dependent variable is accounted for by the independent variable. In this context, the model provides a moderately accurate fit to the data by explaining around 65.17% of the variance in "Y."
+
+```{r}
+#Q.2.We will use the ‘mtcars’ dataset for this question. The dataset is already included in your R distribution. The dataset shows some of the characteristics of different cars. The following shows few samples (i.e. the first 6 rows) of the dataset. The description of the dataset can be found here.
+head(mtcars)
+```
+
+
+Q2.a.James wants to buy a car. He and his friend, Chris, have different opinions about the HorsePower (hp) of cars. James think the weight of a car (wt) can be used to estimate the HorsePower of the car while Chris thinks the fuel consumption expressed in Mile Per Gallon (mpg), is a better estimator of the (hp). Who do you think is right? Construct simple linear models using mtcars data to answer the question.
+```{r}
+P1 <- data.frame(hp = mtcars$hp, wt = mtcars$wt, mpg = mtcars$mpg)
+head(P1)
+cat("when horsepower compared with weight ")
+model1 <- lm(hp ~ wt, data=P1)
+summary(model1)
+
+```
+```{r}
+plot(mtcars$wt, mtcars$hp, main = "model1",xlab = "wt", ylab = "hp",frame = FALSE)
+
+# Adding regression line
+abline(lm(mtcars$hp ~ mtcars$wt), col = "green")
+
+```
+
+
+```{r}
+cat("when horsepower compared with miles per gallon(mpg) ")
+model2 <- lm(hp ~ mpg, data=P1)
+summary(model2)
+
+```
+```{r}
+plot(mtcars$mpg, mtcars$hp, main = "model2",
+     xlab = "mpg", ylab = "hp",frame = FALSE)
+# Adding regression line
+abline(lm(mtcars$hp ~ mtcars$mpg), col = "green")
+```
+
+
+
+As per the results of linear regression models where in model 1( when 'horsepower' compared with 'weight') and model 2(when 'horsepower' compared with 'mpg') It is quite clear that Chris is correct and seems to suggest a better indicator "mpg" for the HorsePower (hp) of cars because
+Model 2 has a higher R-squared value (0.6024 or 60.24%) compared to Model 1 (0.4339 or 43.39%). This suggests that Model 2 explains a larger proportion of the variance in the dependent variable.
+Model 2 has a higher F-statistic (45.46) with an extremely low p-value (1.788e-07), indicating that the model as a whole is highly significant.Model 1 has a lower F-statistic (23) with a significant but higher p-value (4.146e-05).However, the coefficients of independent variable indicate that because mpg has negative value of b1 (-8.83) means that when we increase 1 unit of fuel, it can decrease 8.83 hp of Horse power. In contrast, when the weight increase by 1 unit, the Power of horse will increase 46.16 unit.
+
+Q2.b.Build a model that uses the number of cylinders (cyl) and the mile per gallon (mpg) values of
+a car to predict the car Horse Power (hp). Using this model, what is the estimated Horse Power
+of a car with 4 calendar and mpg of 22?
+```{r}
+P2 <- data.frame(hp = mtcars$hp, cyl = mtcars$cyl, mpg = mtcars$mpg)
+#head(P2)
+cat("when horsepower compared with cylinder and miles per gallon ")
+model3 <- lm(hp ~ cyl + mpg, data=P2)
+summary(model3)
+Estimate_hp <- predict(model3,data.frame(cyl=4,mpg=22))
+Estimate_hp
+
+```
+ Using this model the estimated Horse Power of a car with 4 cylinders and mpg of 22 is 88.93618 horsepower.
+
+Q.3.For this question, we are going to use BostonHousing dataset. The dataset is in ‘mlbench’ package,so we first need to instal the package, call the library and the load the dataset using the followingcommands
+```{r}
+#install.packages('mlbench')
+library(mlbench)
+data(BostonHousing)
+#You should have a dataframe with the name of BostonHousing in your Global environment now.
+```
+
+Q.3.a.Build a model to estimate the median value of owner-occupied homes (medv)based on the
+following variables: crime crate (crim), proportion of residential land zoned for lots over
+25,000 sq.ft (zn), the local pupil-teacher ratio (ptratio) and weather the whether the tract
+bounds Chas River(chas). Is this an accurate model? (Hint check R 2 )
+```{r}
+model4 <- lm(medv ~ crim + zn + ptratio + chas, data = BostonHousing )
+summary(model4)
+
+```
+The model might be considered reasonably accurate because the model indicates that all predictors are statistically significant, as their p-values are very close to zero (p-value < 0.005). This suggests that these predictors have a significant impact on the dependent variable (medv).
+The residual standard error is 7.388. A lower residual standard error indicates a better fit of the model to the data. In this case, it's relatively low, which is a positive aspect.
+The R-squared value is 0.3599. It measures the proportion of variance in the dependent variable (medv) explained by the predictors. In this model, approximately 35.99% of the variance is explained. 
+The adjusted R-squared is 0.3547. It accounts for the number of predictors in the model and is slightly lower than the R-squared. A higher adjusted R-squared is generally preferred.
+The F-statistic tests the overall significance of the model. A high F-statistic (70.41) with an extremely low p-value (< 2.2e-16) indicates that the model as a whole is highly significant.
+Hence this model is statistically significant, and the predictors have low p-values, suggesting they are relevant for predicting the dependent variable. The model might be considered reasonably accurate.
+
+
+3.b(I)Imagine two houses that are identical in all aspects but one bounds the Chas River and the other does not. Which one is more expensive and by how much?
+```{r}
+coefficient_chas1 <- coef(model4)["chas1"]
+coefficient_chas1
+
+```
+
+3.b(II).Imagine two houses that are identical in all aspects but in the neighborhood of one
+of them the pupil-teacher ratio is 15 and in the other one is 18. Which one is more
+expensive and by how much?
+```{r}
+coefficient_chas1 <- coef(model4)["ptratio"]
+coefficient_chas1
+```
+
+
+Q.3.c.Which of the variables are statistically important (i.e. related to the house price)?( Hint: use the p-values of the coefficients to answer.)
+```{r}
+model5 <- lm(medv ~ crim + zn + indus + chas + nox + rm + age + dis + rad + tax + ptratio + lstat + b, data = BostonHousing)
+summary(model5)
+```
+Statistically Important Variables based on the p-values (related to the house price) are Intercept, crim, zn, chas, nox, rm, dis, rad, tax, ptratio, lstat and b.
+These variables are statistically important because their p-values are less than 0.05.
+Variables "indus" and "age" have p-values above the typical significance level of 0.05 and are considered not statistically significant in this model. 
+
+
+Q.3.d.Use the anova analysis and determine the order of importance of these four variables.
+```{r}
+anova.result <- anova(model4)
+print(anova)
+```
+Based on the ANOVA analysis results:
+crim has the highest F-value (118.00683) and the lowest p-value (7.902220e-25), indicating the highest importance among the four variables.
+ptratio is the second most important with an F-value of 86.28724 and a very low p-value (4.738745e-19).
+zn is the third most important with an F-value of 65.12189 and a very low p-value (5.252886e-15).
+chas is the least important among the four variables, with an F-value of 12.22407 and a relatively higher p-value (5.136898e-04).
